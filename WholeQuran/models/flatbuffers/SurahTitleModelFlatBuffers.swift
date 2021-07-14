@@ -7,36 +7,58 @@
 
 import Foundation
 
-struct SurahTitleModelFlatBuffers: SurahTitleModel {
-    private let titles: com_quranic_wholequran_fbs_SurahTitles
+struct SurahTitleModelFlatBuffers: SurahTitleModel, Localizable {
+    let root: com_quranic_wholequran_fbs_SurahTitles
+    private let index: Int32
+
     let no: Int
-    private let locale: String
-    private let defaultLocale: String
+    internal let locale: String
+    internal let defaultLocale: String
 
-    private let index: Int
-
+    @inlinable
+    @inline(__always)
     var arabic: String {
-        get {
-            return titles.surahTitlesBy(key: "ar")?.titles(at: Int32(index))?.title ?? ""
-        }
+        return root.surahTitlesBy(key: "ar")?.titles(at: index)?.title ?? ""
     }
-    
+
+    @inlinable
+    @inline(__always)
     var translit: String {
-        get {
-            return titles.surahTitlesBy(key: "translit")?.titles(at: Int32(index))?.title ?? ""
-        }
+        return (root.surahTitlesBy(key: "translit")?.titles(at: index)?.title!)!
     }
-    
+
+    @inlinable
+    @inline(__always)
     var localize: String {
-        get {
-            return (titles.surahTitlesBy(key: locale) ?? titles.surahTitlesBy(key: defaultLocale))?.titles(at: Int32(index))?.title ?? ""
-        }
+        return (
+            root.surahTitlesBy(key: locale)
+                ??
+                root.surahTitlesBy(key: defaultLocale)
+        )?.titles(at: index)?.title ?? ""
     }
-    
-    init(titles theTitles: com_quranic_wholequran_fbs_SurahTitles,no theNo: Int,locale theLocale: String,defaultLocale theDefaultLocale: String){
-        titles = theTitles
+
+    @inlinable
+    @inline(__always)
+    init(root theRoot: com_quranic_wholequran_fbs_SurahTitles,
+         no theNo: Int,
+         locale theLocale: String,
+         defaultLocale theDefaultLocale: String) {
+        root = theRoot
         no = theNo
-        index = no - 1
+        index = Int32(no - 1)
+        locale = theLocale
+        defaultLocale = theDefaultLocale
+    }
+
+    @inlinable
+    @inline(__always)
+    init(root theRoot: com_quranic_wholequran_fbs_SurahTitles,
+         index theIndex: Int32,
+         locale theLocale: String,
+         defaultLocale theDefaultLocale: String) {
+        root = theRoot
+        no = Int(theIndex) + 1
+        index = theIndex
         locale = theLocale
         defaultLocale = theDefaultLocale
     }

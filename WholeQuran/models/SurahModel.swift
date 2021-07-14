@@ -8,9 +8,8 @@
 import Foundation
 
 protocol SurahModel {
-    associatedtype Ayah: AyahModel
-    associatedtype Ayahs: Collection where Ayahs.Element == Ayah, Ayahs.Index == Int
+    associatedtype AyahsType: CollectionOneBased where AyahsType.Element: AyahModel
     var no: Int { get }
     var title: SurahTitleModel { get }
-    var ayahs: Ayahs { get }
+    var ayahs: AyahsType { get }
 }

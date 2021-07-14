@@ -1,4 +1,3 @@
-
 //
 //  SurahTitleCollectionFlatbuffer.swift
 //  whole-quran-demo
@@ -6,43 +5,76 @@
 //  Created by  Sergey Dolin on 05.07.2021.
 //
 
-import Foundation
 import FlatBuffers
+import Foundation
 import UIKit
 
-struct SurahTitlesModelFlatBuffers: SurahTitlesModel {
-    private let titles: com_quranic_wholequran_fbs_SurahTitles
-    private let locale: String
-    private let defaultLocale: String
-    
-    func index(after i: Int) -> Int {
-        return i + 1
+struct SurahTitlesFlatBuffersProvider: FlatBuffersCollecitonProvider, Localizable {
+    typealias FlatBuffersType = com_quranic_wholequran_fbs_SurahTitles
+    typealias ModelType = SurahTitleModelFlatBuffers
+
+    let root: FlatBuffersType
+    let count = Int32(114)
+    internal let locale: String
+    internal let defaultLocale: String
+
+    @inlinable
+    @inline(__always)
+    subscript(position: Int32) -> ModelType {
+        return SurahTitleModelFlatBuffers(
+            root: root,
+            index: position,
+            locale: locale,
+            defaultLocale: defaultLocale
+        )
     }
-    
-    subscript(position: Int) -> SurahTitleModel {
-        get {
-            return SurahTitleModelFlatBuffers(titles: titles, no: position, locale: locale, defaultLocale: defaultLocale)
-        }
+}
+
+struct SurahTitlesModelFlatBuffers: SurahTitlesModel, CollectionOneBasedFlatBuffersProvided {
+    let provider: SurahTitlesFlatBuffersProvider
+    let locale: String
+    let defaultLocale: String
+
+    @inlinable
+    @inline(__always)
+    init(bundle: Bundle, locale: String, defaultLocale: String) {
+        self.init(
+            root: com_quranic_wholequran_fbs_SurahTitles.getRootAsSurahTitles(
+                bb: ByteBuffer(data: NSDataAsset(name: "surah_titles", bundle: bundle)!.data)),
+            locale: locale,
+            defaultLocale: defaultLocale)
     }
-    
-    var startIndex: Int = 1
-    
-    var endIndex: Int
-    
-    init(locale theLocale: String,defaultLocale theDefaultLocale: String){
-        self.init(titles: com_quranic_wholequran_fbs_SurahTitles.getRootAsSurahTitles(bb: ByteBuffer(data: FlatBuffersData.get(dataAsset: "surah_titles"))), locale: theLocale, defaultLocale: theDefaultLocale)
+
+    @inlinable
+    @inline(__always)
+    init(data: Data, locale: String, defaultLocale: String) {
+        self.init(
+            root: com_quranic_wholequran_fbs_SurahTitles
+                .getRootAsSurahTitles(bb: ByteBuffer(data: data)),
+            locale: locale,
+            defaultLocale: defaultLocale
+        )
     }
-    
-    init(data: Data, locale theLocale: String,defaultLocale theDefaultLocale: String){
-        self.init(titles: com_quranic_wholequran_fbs_SurahTitles.getRootAsSurahTitles(bb: ByteBuffer(data: data)), locale: theLocale, defaultLocale: theDefaultLocale)
+
+    @inlinable
+    @inline(__always)
+    init(root: com_quranic_wholequran_fbs_SurahTitles, locale: String, defaultLocale: String) {
+        self.init(
+            provider: SurahTitlesFlatBuffersProvider(
+                root: root,
+                locale: locale,
+                defaultLocale: defaultLocale),
+            locale: locale,
+            defaultLocale: defaultLocale)
     }
-    
-    init(titles theTitles: com_quranic_wholequran_fbs_SurahTitles, locale theLocale: String,defaultLocale theDefaultLocale: String){
-        titles = theTitles
+
+    @inlinable
+    @inline(__always)
+    init(provider theProvider: SurahTitlesFlatBuffersProvider,
+         locale theLocale: String,
+         defaultLocale theDefaultLocale: String) {
+        provider = theProvider
         locale = theLocale
         defaultLocale = theDefaultLocale
-        endIndex = Int((titles.surahTitlesBy(key: "ar")?.titlesCount ?? Int32(0))) + 1
     }
-    
-
 }

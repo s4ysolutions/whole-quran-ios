@@ -7,6 +7,5 @@
 
 import Foundation
 
-protocol SurahTitlesModel: Collection where Element == SurahTitleModel, Index == Int{
-    
+protocol SurahTitlesModel: Localizable & CollectionOneBased where Element: SurahTitleModel {
 }

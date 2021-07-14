@@ -8,41 +8,41 @@
 import Foundation
 
 struct AyahModelFlatBuffers: AyahModel {
-    typealias Words = WordsFlatBuffers
-
     let root: com_quranic_wholequran_fbs_Ayah
-    
+
+    @inlinable
+    @inline(__always)
     var no: Int {
-        get {
-            return Int(root.no)
-        }
+        return Int(root.no)
     }
 
-    struct WordsFlatBuffers: Collection {
-        let root: com_quranic_wholequran_fbs_Ayah
-        
-        func index(after i: Int) -> Int {
-            return i + 1
-        }
-        
-        subscript(position: Int) -> String {
-            get {
-                return root.words(at: Int32(position - 1)) ?? ""
-            }
-        }
-        
-        var startIndex: Int = 1
-        var endIndex: Int
-        init(root theRoot: com_quranic_wholequran_fbs_Ayah) {
-            root = theRoot
-            endIndex = Int(root.wordsCount) + 1
-        }
+    struct AyahWordModelFlatBuffers: AyahWordModel {
+        let no: Int
+        let word: String
     }
-    
-    var arabic: Words {
-        get {
-            return Words(root: root)
+
+    struct AyahWordsProvider: FlatBuffersCollecitonProvider {
+        typealias FlatBuffersType = com_quranic_wholequran_fbs_Ayah
+        typealias ModelType = AyahWordModel
+
+        let root: FlatBuffersType
+
+        @inlinable
+        @inline(__always)
+        subscript(position: Int32) -> ModelType {
+            return AyahWordModelFlatBuffers(no: Int(position + 1), word: root.words(at: position)!)
         }
+
+        @inlinable
+        @inline(__always)
+        var count: Int32 { return root.wordsCount }
     }
-    
+
+    typealias AyahWordsFlatBuffers = CollectionOneBasedFlatBuffers<AyahWordsProvider>
+    @inlinable
+    @inline(__always)
+    var arabic: AyahWordsFlatBuffers {
+        let provider = AyahWordsProvider(root: root)
+        return AyahWordsFlatBuffers(provider: provider)
+    }
 }

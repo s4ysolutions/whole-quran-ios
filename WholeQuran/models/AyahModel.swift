@@ -7,8 +7,12 @@
 
 import Foundation
 
-protocol AyahModel {
-    associatedtype Words: Collection where Words.Element == String, Words.Index == Int
+protocol AyahWordModel {
+    var word: String { get }
     var no: Int { get }
-    var arabic: Words { get }
+}
+protocol AyahModel {
+    associatedtype AyahWordsType: CollectionOneBased where AyahWordsType.Element == AyahWordModel
+    var no: Int { get }
+    var arabic: AyahWordsType {get}
 }

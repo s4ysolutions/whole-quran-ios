@@ -16,31 +16,36 @@ public struct com_quranic_wholequran_fbs_WordByWordEntry: FlatBufferObject {
   public init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
 
   private enum VTOFFSET: VOffset {
-    case id = 4
-    case transliteration = 6
-    case meaning = 8
+    case key = 4
+    case id = 6
+    case transliteration = 8
+    case meaning = 10
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
 
-  public var id: String! { let o = _accessor.offset(VTOFFSET.id.v); return _accessor.string(at: o) }
-  public var idSegmentArray: [UInt8]! { return _accessor.getVector(at: VTOFFSET.id.v) }
+  public var key: UInt64 { let o = _accessor.offset(VTOFFSET.key.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
+  public var id: String? { let o = _accessor.offset(VTOFFSET.id.v); return o == 0 ? nil : _accessor.string(at: o) }
+  public var idSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.id.v) }
   public var transliteration: String? { let o = _accessor.offset(VTOFFSET.transliteration.v); return o == 0 ? nil : _accessor.string(at: o) }
   public var transliterationSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.transliteration.v) }
   public var meaning: String? { let o = _accessor.offset(VTOFFSET.meaning.v); return o == 0 ? nil : _accessor.string(at: o) }
   public var meaningSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.meaning.v) }
-  public static func startWordByWordEntry(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 3) }
+  public static func startWordByWordEntry(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 4) }
+  public static func add(key: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: key, def: 0, at: VTOFFSET.key.p) }
   public static func add(id: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: id, at: VTOFFSET.id.p) }
   public static func add(transliteration: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: transliteration, at: VTOFFSET.transliteration.p) }
   public static func add(meaning: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: meaning, at: VTOFFSET.meaning.p) }
-  public static func endWordByWordEntry(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [4]); return end }
+  public static func endWordByWordEntry(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   public static func createWordByWordEntry(
     _ fbb: inout FlatBufferBuilder,
+    key: UInt64 = 0,
     idOffset id: Offset = Offset(),
     transliterationOffset transliteration: Offset = Offset(),
     meaningOffset meaning: Offset = Offset()
   ) -> Offset {
     let __start = com_quranic_wholequran_fbs_WordByWordEntry.startWordByWordEntry(&fbb)
+    com_quranic_wholequran_fbs_WordByWordEntry.add(key: key, &fbb)
     com_quranic_wholequran_fbs_WordByWordEntry.add(id: id, &fbb)
     com_quranic_wholequran_fbs_WordByWordEntry.add(transliteration: transliteration, &fbb)
     com_quranic_wholequran_fbs_WordByWordEntry.add(meaning: meaning, &fbb)
@@ -51,14 +56,13 @@ public struct com_quranic_wholequran_fbs_WordByWordEntry: FlatBufferObject {
     off.sort { Table.compare(Table.offset(Int32($1.o), vOffset: 4, fbb: fbb.buffer), Table.offset(Int32($0.o), vOffset: 4, fbb: fbb.buffer), fbb: fbb.buffer) < 0 } 
     return fbb.createVector(ofOffsets: off)
   }
-  fileprivate static func lookupByKey(vector: Int32, key: String, fbb: ByteBuffer) -> com_quranic_wholequran_fbs_WordByWordEntry? {
-    let key = key.utf8.map { $0 }
+  fileprivate static func lookupByKey(vector: Int32, key: UInt64, fbb: ByteBuffer) -> com_quranic_wholequran_fbs_WordByWordEntry? {
     var span = fbb.read(def: Int32.self, position: Int(vector - 4))
     var start: Int32 = 0
     while span != 0 {
       var middle = span / 2
       let tableOffset = Table.indirect(vector + 4 * (start + middle), fbb)
-      let comp = Table.compare(Table.offset(Int32(fbb.capacity) - tableOffset, vOffset: 4, fbb: fbb), key, fbb: fbb)
+      let comp = fbb.read(def: UInt64.self, position: Int(Table.offset(Int32(fbb.capacity) - tableOffset, vOffset: 4, fbb: fbb)))
       if comp > 0 {
         span = middle
       } else if comp < 0 {
@@ -92,7 +96,7 @@ public struct com_quranic_wholequran_fbs_SurahWBW: FlatBufferObject {
 
   public var wbwCount: Int32 { let o = _accessor.offset(VTOFFSET.wbw.v); return o == 0 ? 0 : _accessor.vector(count: o) }
   public func wbw(at index: Int32) -> com_quranic_wholequran_fbs_WordByWordEntry? { let o = _accessor.offset(VTOFFSET.wbw.v); return o == 0 ? nil : com_quranic_wholequran_fbs_WordByWordEntry(_accessor.bb, o: _accessor.indirect(_accessor.vector(at: o) + index * 4)) }
-  public func wbwBy(key: String) -> com_quranic_wholequran_fbs_WordByWordEntry? { let o = _accessor.offset(VTOFFSET.wbw.v); return o == 0 ? nil : com_quranic_wholequran_fbs_WordByWordEntry.lookupByKey(vector: _accessor.vector(at: o), key: key, fbb: _accessor.bb) }
+  public func wbwBy(key: UInt64) -> com_quranic_wholequran_fbs_WordByWordEntry? { let o = _accessor.offset(VTOFFSET.wbw.v); return o == 0 ? nil : com_quranic_wholequran_fbs_WordByWordEntry.lookupByKey(vector: _accessor.vector(at: o), key: key, fbb: _accessor.bb) }
   public static func startSurahWBW(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 1) }
   public static func addVectorOf(wbw: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: wbw, at: VTOFFSET.wbw.p) }
   public static func endSurahWBW(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }

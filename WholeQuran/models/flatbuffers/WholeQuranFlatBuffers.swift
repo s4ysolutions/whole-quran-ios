@@ -16,6 +16,7 @@ struct WholeQuranFlatBuffers: WholeQuranModel {
     let surahsPivot: SurahsPivotModelFlatBuffers
     let corpus: CorpusModelFlatBuffers
     let corpusPivot: CorpusPivotModelFlatBuffers
+    let wbw: WBWModelFlatBuffers
 
     init(bundle: Bundle, locale: String, defaultLocale: String) {
         surahTitles = SurahTitlesModelFlatBuffers(
@@ -29,6 +30,7 @@ struct WholeQuranFlatBuffers: WholeQuranModel {
         surahsPivot = SurahsPivotModelFlatBuffers(bundle: bundle)
         corpus = CorpusModelFlatBuffers(bundle: bundle)
         corpusPivot = CorpusPivotModelFlatBuffers(bundle: bundle)
+        wbw = WBWModelFlatBuffers(bundle: bundle)
     }
 
     init(locale: String, defaultLocale: String) {

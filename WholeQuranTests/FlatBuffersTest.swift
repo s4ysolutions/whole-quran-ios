@@ -104,6 +104,57 @@ class FlatBuffersTest: XCTestCase {
         }
     }
 
+    func testWBW() {
+        // create API endpoint
+        let wholeQuran = WholeQuranFlatBuffers(locale: "en", defaultLocale: "en")
+        // get WBW API
+        let wbw = wholeQuran.wbw
+
+        // wbw is divided by 114 surahs
+        XCTAssertEqual(114, wbw.count)
+
+        // get 1st surah
+        let surah1 = wbw[1]
+        // make sure it has 29 entries
+        XCTAssertEqual(29, surah1.count)
+
+        // access (word) entry of 1st surah by position
+        let w0 = surah1[0]
+        XCTAssertEqual("1:1:1", w0.id)
+        XCTAssertEqual("In (the) name", w0.meaning)
+        XCTAssertEqual("bis'mi", w0.transliteration)
+
+        // access (word) etnry of 1st surah by index string
+        //   - non existing index returns 0
+        XCTAssertNil(surah1.by(key: "non existing"))
+        XCTAssertNil(surah1.by(key: "0:0:0"))
+        XCTAssertNil(surah1.by(key: "1000:0:0"))
+        XCTAssertNil(surah1.by(key: "0:1000:0"))
+        XCTAssertNil(surah1.by(key: "0:0:1000"))
+
+        //   - existing index returns an entry
+        let s1_1_1 = surah1.by(key: "1:1:1")
+        XCTAssertNotNil(s1_1_1)
+        XCTAssertEqual("1:1:1", s1_1_1!.id)
+        XCTAssertEqual("In (the) name", s1_1_1!.meaning)
+        XCTAssertEqual("bis'mi", s1_1_1!.transliteration)
+        
+        // the same for surah2
+        let surah2 = wbw[2]
+        XCTAssertEqual(6116, surah2.count)
+        
+        let w1000 = surah2[1000]
+        XCTAssertEqual("2:66:3", w1000.id)
+        XCTAssertEqual("for those", w1000.meaning)
+        XCTAssertEqual("limā", w1000.transliteration)
+        
+        let s2_66_3 = surah2.by(key: "2:66:3")
+        XCTAssertNotNil(s2_66_3)
+        XCTAssertEqual("2:66:3", s2_66_3!.id)
+        XCTAssertEqual("for those", w1000.meaning)
+        XCTAssertEqual("limā", w1000.transliteration)
+    }
+
     func testPerformanceExample() throws {
         // This is an example of a performance test case.
         measure {

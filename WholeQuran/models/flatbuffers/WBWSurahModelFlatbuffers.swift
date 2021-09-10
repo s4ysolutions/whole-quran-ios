@@ -31,6 +31,7 @@ struct WBWSurahModelProvider: FlatBuffersCollecitonProvider {
 struct WBWSurahModelFlatBuffers: WBWSurahModel, CollectionZeroBasedFlatBuffersProvided {
     typealias ProviderType = WBWSurahModelProvider
     let provider: ProviderType
+    let surahNo: Int
 /*
     func by(key: String) -> WBWEntryModelFlatBuffers? {
         guard let root = provider.root.wbwBy(key: key) else {
@@ -39,13 +40,8 @@ struct WBWSurahModelFlatBuffers: WBWSurahModel, CollectionZeroBasedFlatBuffersPr
         return WBWEntryModelFlatBuffers(root: root)
     }
 */
-    func by(key: String) -> Self.Element? {
-        let keya = key.components(separatedBy: ":")
-        guard keya.count == 3 else {
-            return nil
-        }
-        let keyi_1 = (((Int(keya[0]) ?? 0) * 300 + (Int(keya[1]) ?? 0)) * 145)
-        let keyi = keyi_1 + (Int(keya[2]) ?? 0)
+    func by(surah: Int, ayah: Int, word: Int) -> Self.Element? {
+        let keyi = ((surah * 300 + ayah) * 145) + word
         guard keyi != 0 else {
             return nil
         }
@@ -59,7 +55,6 @@ struct WBWSurahModelFlatBuffers: WBWSurahModel, CollectionZeroBasedFlatBuffersPr
 
         var lowerIndex = startIndex
         var upperIndex = endIndex - 1
-
 
         while true {
             let currentIndex = (lowerIndex + upperIndex) / 2
@@ -75,26 +70,38 @@ struct WBWSurahModelFlatBuffers: WBWSurahModel, CollectionZeroBasedFlatBuffersPr
                 }
             }
         }
+    }
 
+    func by(ayah: Int, word: Int) -> Self.Element? {
+        return by(surah: surahNo, ayah: ayah, word: word)
+    }
+
+    func by(key: String) -> Self.Element? {
+        let keya = key.components(separatedBy: ":")
+        guard keya.count == 3 else {
+            return nil
+        }
+        return by(surah: Int(keya[0]) ?? 0, ayah: Int(keya[1]) ?? 0, word: Int(keya[2]) ?? 0)
     }
 
     @inlinable
     @inline(__always)
     init(bundle: Bundle, assetNo: Int) {
-        self.init(bundle: bundle, assetName: "surah_wbw_\(assetNo)")
+        self.init(surah: assetNo, bundle: bundle, assetName: "surah_wbw_\(assetNo)")
     }
-    
+
     @inlinable
     @inline(__always)
-    init(bundle theBundle: Bundle, assetName: String) {
+    init(surah theSurah: Int, bundle theBundle: Bundle, assetName: String) {
         let data = NSDataAsset(name: assetName, bundle: theBundle)!.data
-        self.init(data: data)
+        self.init(surah: theSurah, data: data)
     }
-    
+
     @inlinable
     @inline(__always)
-    init(data: Data) {
+    init(surah theSurahNo: Int, data: Data) {
         let root = com_quranic_wholequran_fbs_SurahWBW.getRootAsSurahWBW(bb: ByteBuffer(data: data))
         provider = WBWSurahModelProvider(root: root)
+        surahNo = theSurahNo
     }
 }

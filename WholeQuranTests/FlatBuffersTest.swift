@@ -138,21 +138,27 @@ class FlatBuffersTest: XCTestCase {
         XCTAssertEqual("1:1:1", s1_1_1!.id)
         XCTAssertEqual("In (the) name", s1_1_1!.meaning)
         XCTAssertEqual("bis'mi", s1_1_1!.transliteration)
-        
+
         // the same for surah2
         let surah2 = wbw[2]
         XCTAssertEqual(6116, surah2.count)
-        
+
         let w1000 = surah2[1000]
         XCTAssertEqual("2:66:3", w1000.id)
         XCTAssertEqual("for those", w1000.meaning)
         XCTAssertEqual("limā", w1000.transliteration)
-        
+
         let s2_66_3 = surah2.by(key: "2:66:3")
         XCTAssertNotNil(s2_66_3)
         XCTAssertEqual("2:66:3", s2_66_3!.id)
         XCTAssertEqual("for those", w1000.meaning)
         XCTAssertEqual("limā", w1000.transliteration)
+
+        let s1_7_1 = surah1.by(ayah: 7, word: 1)
+        XCTAssertNotNil(s1_7_1)
+        XCTAssertEqual("1:7:1", s1_7_1!.id)
+        XCTAssertEqual("(The) path", s1_7_1!.meaning)
+        XCTAssertEqual("ṣirāṭa", s1_7_1!.transliteration)
     }
 
     func testPerformanceExample() throws {

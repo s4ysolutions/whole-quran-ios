@@ -8,5 +8,4 @@
 import Foundation
 
 protocol WBWModel: CollectionOf114 where Element: WBWSurahModel {
-    
 }

@@ -12,7 +12,7 @@ struct WBWModelFlatBuffers: WBWModel {
 
     private static var cache: [Int: SurahModel] = [:]
     private let bundle: Bundle
-    
+
     subscript(position: Int) -> SurahModel {
         if let cached = WBWModelFlatBuffers.cache[position] {
             return cached
@@ -22,9 +22,8 @@ struct WBWModelFlatBuffers: WBWModel {
             return cached
         }
     }
-    
+
     init(bundle theBundle: Bundle) {
         bundle = theBundle
     }
-    
 }
